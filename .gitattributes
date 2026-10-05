@@ -1,0 +1,2 @@
+# Normalise line endings: LF in the repo and in working copies (Makefile, CI, shell).
+* text=auto eol=lf
