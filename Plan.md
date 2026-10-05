@@ -39,7 +39,7 @@ flowchart LR
 |---|---|---|
 | **Patient** `fhir_id` (unique) | `Patient.id` | Idempotency key |
 | `family_name`, `given_names` | `name[]` | First `official`, else `usual`, else first entry; `text` if no parts |
-| `gender` | `gender` | FHIR value set, else null |
+| `gender` | `gender` | FHIR value set, else left blank |
 | `birth_date` | `birthDate` | Full date only; partial dates (`1970`, `1970-05`) → null, kept in the raw resource |
 | **Observation** `fhir_id` (unique) | `Observation.id` | Idempotency key |
 | `patient` (FK) | `subject.reference` | Relative, absolute or versioned reference normalised to `Patient/<id>`; anything else → rejected and counted |
@@ -47,7 +47,7 @@ flowchart LR
 | `code_system`, `code`, `display` | `code.coding[]` | LOINC coding first, else first coding; `display` else `code.text` |
 | `value_type` + `value_number`, `value_unit`, `value_text` | `value[x]` | `quantity` (decimal, never float), `concept`, `string`, `components`, `none` |
 | `components` | `component[]` | Simplified list, e.g. systolic / diastolic blood pressure |
-| `effective_at` | `effectiveDateTime` > `effectiveInstant` > `effectivePeriod.start` | Full timestamp with timezone only, else null |
+| `effective_at`, `effective_date_only` | `effectiveDateTime` > `effectiveInstant` > `effectivePeriod.start` | Timestamp with timezone as is; a day without time (2.5% of the sandbox) stored at 00:00 UTC and flagged date-only; partial dates or no timezone → null |
 
 Units are kept as sent (UCUM), never converted. The raw source resource is kept alongside each row for traceability and re-mapping, in encrypted storage with a retention limit (purged after sign-off). A malformed resource is rejected and counted, never allowed to fail its batch.
 
