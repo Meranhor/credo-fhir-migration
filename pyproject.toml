@@ -45,6 +45,8 @@ extend-exclude = ["backend/*/migrations"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "B", "UP", "SIM", "DJ", "PT", "RUF"]
+# Django declares Meta options (indexes, ordering...) as plain class attributes.
+ignore = ["RUF012"]
 
 [tool.mypy]
 python_version = "3.12"

@@ -1,13 +1,17 @@
 # Run from an activated virtual environment (see README).
 PYTHON ?= python
 NPM ?= npm
+LIMIT ?=
 
-.PHONY: setup run run-api run-web test lint format
+.PHONY: setup import run run-api run-web test lint format
 
 setup:
 	$(PYTHON) -m pip install -e ".[dev]"
 	$(NPM) --prefix frontend ci
 	$(PYTHON) backend/manage.py migrate
+
+import:
+	$(PYTHON) backend/manage.py import_fhir $(if $(LIMIT),--limit $(LIMIT))
 
 run:
 	$(MAKE) -j2 run-api run-web
