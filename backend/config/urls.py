@@ -1,3 +1,5 @@
-from django.urls import URLPattern, URLResolver
+from django.urls import include, path
 
-urlpatterns: list[URLPattern | URLResolver] = []
+urlpatterns = [
+    path("api/", include("migration.api.urls")),
+]
