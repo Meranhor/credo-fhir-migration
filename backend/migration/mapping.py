@@ -5,7 +5,7 @@ from datetime import UTC, date, datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-from migration.models import Observation, Patient
+from migration.models import Observation, Patient, format_decimal
 
 Resource = dict[str, Any]
 
@@ -187,7 +187,7 @@ def _component(component: Resource) -> dict[str, str | None]:
     unit = ""
     if "valueQuantity" in component:
         number = _decimal(component["valueQuantity"].get("value"))
-        value = None if number is None else _plain(number)
+        value = None if number is None else format_decimal(number)
         unit = (
             component["valueQuantity"].get("unit") or component["valueQuantity"].get("code") or ""
         )
@@ -201,8 +201,3 @@ def _component(component: Resource) -> dict[str, str | None]:
         "value": value,
         "unit": unit,
     }
-
-
-def _plain(number: Decimal) -> str:
-    # 120.000000 -> "120", 98.390000 -> "98.39"
-    return format(number.normalize(), "f")
