@@ -31,6 +31,7 @@ def day(n: int) -> datetime:
 def test_list_is_sorted_by_name_with_counts_in_one_query(
     client: Client, django_assert_num_queries: DjangoAssertNumQueries
 ) -> None:
+    make_patient("p-nameless", "")
     zed, ada = make_patient("p-z", "Zed", "Zoe"), make_patient("p-a", "Ada", "Lovelace")
     make_observation(ada, "o-1", effective_at=day(1))
     make_observation(ada, "o-2", effective_at=day(9))
@@ -41,7 +42,8 @@ def test_list_is_sorted_by_name_with_counts_in_one_query(
 
     assert response.status_code == 200
     body = response.json()
-    assert [p["name"] for p in body] == ["Lovelace Ada", "Zoe Zed"]
+    # Named patients first (by family name), patients without a name last.
+    assert [p["name"] for p in body] == ["Lovelace Ada", "Zoe Zed", ""]
     assert body[0]["observation_count"] == 2
     assert body[0]["last_observation_at"] == "2024-01-09T00:00:00Z"
     assert (body[1]["observation_count"], body[1]["last_observation_at"]) == (1, None)

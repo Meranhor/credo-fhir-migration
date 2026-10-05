@@ -55,6 +55,7 @@ Units are kept as sent (UCUM), never converted. The raw source resource is kept 
 
 - **Counts, per batch**: source count (`_summary=count` on the same grouped search) vs rows staged. The working slice does this for every batch at the cost of one request per batch.
 - **Integrity**: no orphan observation, unique `fhir_id`, every source id present exactly once.
+- **Duplicate candidates**: patients sharing name and birth date under different ids are reported for human review, never merged automatically — two real people can share both, and a wrong merge mixes two medical records. (On the public sandbox, 45% of patients fall in such groups: test scripts creating the same patient hundreds of times.)
 - **Field-level reconciliation**: a random sample re-fetched from the source and compared field by field through the same mapping.
 - **Distribution checks**: share of each `value_type`, null rates and date ranges vs the source profile, so that a silent mapping regression shows up as a number.
 - **Sign-off**: a validation report attached to the run, reviewed by the data owner (and a clinical reviewer on a sample) before cutover.

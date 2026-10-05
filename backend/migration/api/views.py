@@ -1,4 +1,14 @@
-from django.db.models import Count, F, Max, Prefetch, QuerySet
+from django.db.models import (
+    BooleanField,
+    Count,
+    ExpressionWrapper,
+    F,
+    Max,
+    Prefetch,
+    Q,
+    QuerySet,
+)
+from django.db.models.functions import Lower
 from rest_framework import generics
 
 from migration.api.serializers import PatientDetailSerializer, PatientListSerializer
@@ -19,7 +29,13 @@ class PatientList(generics.ListAPIView[Patient]):
                 observation_count=Count("observations"),
                 last_observation_at=Max("observations__effective_at"),
             )
-            .order_by("family_name", "given_names", "id")
+            # ~9% of sandbox patients have no name: list them after the named ones.
+            .order_by(
+                ExpressionWrapper(Q(family_name="", given_names=""), output_field=BooleanField()),
+                Lower("family_name"),
+                Lower("given_names"),
+                "id",
+            )
         )
 
 
